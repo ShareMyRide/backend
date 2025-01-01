@@ -14,4 +14,16 @@ router.get('/',async(req,res)=>{
     }
 })
 
+router.get('/:id',async(req,res)=>{
+    const id = req.params.id;
+    const result = await Ride.findById(id);
+
+    if(result){
+        res.status(200).json(result)
+    }
+    else{
+        res.status(404).send("Ride not found")
+    }
+})
+
 module.exports=router;
