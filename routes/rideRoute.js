@@ -26,4 +26,24 @@ router.get('/:id',async(req,res)=>{
     }
 })
 
+router.post('/',async(req,res)=>{
+    const {date,startingPoint,endingPoint} = req.body;
+
+    if(!date || !startingPoint || !endingPoint){
+        res.status(404).send("please provides required fields")
+
+    }
+    else{
+        try{
+            const result = await Ride.create({date,startingPoint,endingPoint});
+            res.status(200).json(result)
+
+        }
+        catch(error){
+            res.status(500).error(error)
+
+        }
+    }
+})
+
 module.exports=router;
