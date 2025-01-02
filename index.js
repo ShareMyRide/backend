@@ -3,7 +3,7 @@ const app=new express();
 const mongoose=require("mongoose");
 
 
-
+const authRoute=require('./routes/authRoute')
 
 
 mongoose.connect("mongodb+srv://adithyagunasekara2000:YvovidOF8PJwJoTI@cluster0.ksfu6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
@@ -13,7 +13,7 @@ db.once('open', () => console.log("Connected to DB"));
 app.use(express.json());
 
 
-
+app.use('/api/auth',authRoute)
 
 app.listen(2052,()=>{
     console.log("Backend server is running")
