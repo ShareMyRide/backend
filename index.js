@@ -15,6 +15,6 @@ app.use(express.json());
 
 
 
-app.listen(2002,()=>{
+app.listen(2052,()=>{
     console.log("Backend server is running")
 });
