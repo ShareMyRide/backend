@@ -6,3 +6,15 @@
 <li>Epress.js</li>
 <h3>Database</h3>
 <li>MongoDB</li>
+
+## To run this project
+<ul>
+<li>backend</li>
+  <ul>
+  <li>in terminal 'npm start'</li>
+  </ul>
+<li>frontend</li>
+  <ul>
+  <li>in terminal 'npm expo start'</li>
+  </ul>
+</ul>
