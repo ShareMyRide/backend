@@ -38,3 +38,25 @@ router.get('/feedback/:rideId', auth, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+// Update feedback
+router.put('/feedback/:id', auth, async (req, res) => {
+    const { rating, comment, feedbackType, name, telephone, kilometersTravelled, timeSpent } = req.body;
+    try {
+        const feedback = await Feedback.findByIdAndUpdate(
+            req.params.id,
+            {
+                rating,
+                comment,
+                feedbackType,
+                name,
+                telephone,
+                kilometersTravelled,
+                timeSpent
+            },
+            { new: true }
+        );
+        res.status(200).json(feedback);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
