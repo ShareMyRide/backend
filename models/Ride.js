@@ -8,6 +8,6 @@ const RideSchema = new Schema({
     endingPoint:{type:String,required:true}
 }) 
 
-const Ride = mongoose.model('libraries',RideSchema)
+const Ride = mongoose.model('Rides',RideSchema)
 
 module.exports = Ride;
