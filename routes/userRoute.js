@@ -28,3 +28,13 @@ router.post('/feedback', auth, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+// Get feedback for a specific ride
+router.get('/feedback/:rideId', auth, async (req, res) => {
+    try {
+        const feedbacks = await Feedback.find({ rideId: req.params.rideId });
+        res.status(200).json(feedbacks);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
