@@ -110,7 +110,7 @@ const chatbotData = {
   };
 
   app.post("/chatbot",async (req, res) => {
-    
+
     const { category, question, customMessage } = req.body;
 
     if (!category) {
@@ -136,3 +136,27 @@ const chatbotData = {
         suggestion: "To send a custom message, include 'customMessage' in your request body."
       });
     }
+    
+
+    if (customMessage) {
+        try {
+          const newMessage = new CustomMessage({
+            message: customMessage,
+            category
+          });
+          await newMessage.save();
+    
+          return res.json({
+            message: "Thank you for your message! We will review it and improve our chatbot."
+          });
+        } catch (err) {
+          console.error("Error saving custom message:", err);
+          return res.status(500).json({
+            error: "An error occurred while saving your message. Please try again later."
+          });
+        }
+      }
+    
+      const questionsList = chatbotData.questions[category].map(q => q.question);
+      return res.json({ questions: questionsList });
+    });
