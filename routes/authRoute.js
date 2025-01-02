@@ -62,4 +62,36 @@ router.post('/login', async (req, res) => {
   }
 });
 
+//edit profile details
+router.put("/editProfile/:id",async(req,res)=>{
+  try{
+   const userId=req.params.id;
+   const{firstname,lastname,email,mobileNumber,password,NIC}=req.body;
+  
+   const updateUser=await User.findByIdAndUpdate(
+     userId,
+     {
+       firstname,
+       lastname,
+       email,
+       mobileNumber,
+       password,
+       NIC,
+      }, 
+      {
+       new:true,runValidators:true
+      }
+   );
+   if(!updateUser){
+     return res.status(404).json({message:"User not found"});
+   }
+   res.status(200).json({message:"Profile updated successfully",updateUser});
+ 
+  }
+  catch(error){
+   console.log(error);
+   res.status(500).json({message:"An error occured while updating the profile"});
+  }
+ })
+
 module.exports=router;
