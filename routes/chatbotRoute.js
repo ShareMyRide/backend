@@ -91,7 +91,7 @@ const chatbotData = {
         
       ],
       "App Features": [
-        
+
         {
             question: "How do I rate a driver or passenger?",
             answer: "After completing a ride, you will be prompted to rate the driver or passenger. You can also rate from the ride history."
@@ -108,3 +108,31 @@ const chatbotData = {
       ]
     }
   };
+
+  app.post("/chatbot",async (req, res) => {
+    
+    const { category, question, customMessage } = req.body;
+
+    if (!category) {
+      return res.json({ categories: chatbotData.categories });
+    }
+
+    //when we create frontend, we can remove this
+    if (!chatbotData.questions[category]) {
+      return res.status(400).json({ error: "Invalid category." });
+    }
+  
+    if (question) {
+      const foundQuestion = chatbotData.questions[category].find(
+        q => q.question.toLowerCase() === question.toLowerCase()
+      );
+  
+      if (foundQuestion) {
+        return res.json({ answer: foundQuestion.answer });
+      }
+  
+      return res.json({
+        message: "Sorry, I couldn't find an answer to your question. You can send a custom message.",
+        suggestion: "To send a custom message, include 'customMessage' in your request body."
+      });
+    }
