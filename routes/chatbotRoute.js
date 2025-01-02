@@ -11,6 +11,7 @@ const chatbotData = {
     questions: {
       "Custom Message":[],
       "General": [
+
         {
             question: "What is ShareMyRide?",
             answer: "ShareMyRide is a ride-sharing app that connects drivers with passengers traveling along the same route. Drivers can list their routes and available seats, and passengers can join rides easily."
@@ -26,6 +27,7 @@ const chatbotData = {
         
       ],
       "Driver-Specific": [
+
         {
             question: "How can I add a ride?",
             answer: "Go to the 'Add Ride' page, fill in the details like route, time, and available seats, and submit. Your ride will now be visible to potential passengers."
@@ -41,6 +43,7 @@ const chatbotData = {
         
       ],
       "Passenger-Specific": [
+
         {
             question: "How can I find available rides?",
             answer: "Use the search bar on the 'Find Rides' page to enter your starting point and destination. A list of matching rides will appear."
@@ -56,6 +59,7 @@ const chatbotData = {
         
       ],
       "Account and Profile": [
+
         {
             question: "How do I update my profile details?",
             answer: "Go to the 'Profile' page, click 'Edit,' and update your information."
@@ -71,6 +75,7 @@ const chatbotData = {
         
       ],
       "Technical Issues": [
+
         {
             question:" I am having trouble logging in. What should I do?",
             answer: "Ensure you are entering the correct email and password. If the issue persists, try resetting your password."
@@ -86,6 +91,7 @@ const chatbotData = {
         
       ],
       "App Features": [
+        
         {
             question: "How do I rate a driver or passenger?",
             answer: "After completing a ride, you will be prompted to rate the driver or passenger. You can also rate from the ride history."
