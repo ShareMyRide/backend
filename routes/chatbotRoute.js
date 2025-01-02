@@ -12,87 +12,93 @@ const chatbotData = {
       "Custom Message":[],
       "General": [
         {
-          question: "What is ShareMyRide?",
-          answer: "ShareMyRide is a ride-sharing app that connects drivers with passengers traveling along the same route. Drivers can list their routes and available seats, and passengers can join rides easily."
-        },
-        {
-          question: "How do I sign up for ShareMyRide?",
-          answer: "Simply click the 'Sign Up' button on the home screen, enter your details, and verify your account through email."
-        },
-        {
-          question: "How can I reset my password?",
-          answer: "On the login page, click 'Forgot Password.' Follow the instructions to reset your password via email."
-        }
+            question: "What is ShareMyRide?",
+            answer: "ShareMyRide is a ride-sharing app that connects drivers with passengers traveling along the same route. Drivers can list their routes and available seats, and passengers can join rides easily."
+          },
+          {
+            question: "How do I sign up for ShareMyRide?",
+            answer: "Simply click the 'Sign Up' button on the home screen, enter your details, and verify your account through email."
+          },
+          {
+            question: "How can I reset my password?",
+            answer: "On the login page, click 'Forgot Password.' Follow the instructions to reset your password via email."
+          }
+        
       ],
       "Driver-Specific": [
         {
-          question: "How can I add a ride?",
-          answer: "Go to the 'Add Ride' page, fill in the details like route, time, and available seats, and submit. Your ride will now be visible to potential passengers."
-        },
-        {
-          question: "Can I edit the details of a ride I’ve posted?",
-          answer: "Yes, go to the 'My Rides' section, select the ride you want to edit, and update the details."
-        },
-        {
-          question: "How do I remove a ride I posted?",
-          answer: "Navigate to 'My Rides,' select the ride, and click the 'Delete' option."
-        }
+            question: "How can I add a ride?",
+            answer: "Go to the 'Add Ride' page, fill in the details like route, time, and available seats, and submit. Your ride will now be visible to potential passengers."
+          },
+          {
+            question: "Can I edit the details of a ride I’ve posted?",
+            answer: "Yes, go to the 'My Rides' section, select the ride you want to edit, and update the details."
+          },
+          {
+            question: "How do I remove a ride I posted?",
+            answer: "Navigate to 'My Rides,' select the ride, and click the 'Delete' option."
+          }
+        
       ],
       "Passenger-Specific": [
         {
-          question: "How can I find available rides?",
-          answer: "Use the search bar on the 'Find Rides' page to enter your starting point and destination. A list of matching rides will appear."
-        },
-        {
-          question: "How do I book a seat?",
-          answer: "Select a ride that matches your route and click the 'Book Seat' button."
-        },
-        {
-          question: "What happens if I need to cancel my booking?",
-          answer: "You can cancel your booking from the 'My Bookings' section. Note that cancellation policies may apply."
-        }
+            question: "How can I find available rides?",
+            answer: "Use the search bar on the 'Find Rides' page to enter your starting point and destination. A list of matching rides will appear."
+          },
+          {
+            question: "How do I book a seat?",
+            answer: "Select a ride that matches your route and click the 'Book Seat' button."
+          },
+          {
+            question: "What happens if I need to cancel my booking?",
+            answer: "You can cancel your booking from the 'My Bookings' section. Note that cancellation policies may apply."
+          }
+        
       ],
       "Account and Profile": [
         {
-          question: "How do I update my profile details?",
-          answer: "Go to the 'Profile' page, click 'Edit,' and update your information."
-        },
-        {
-          question: "Can I deactivate my account?",
-          answer:"Yes, go to the Settings page and click Deactivate Account. Follow the prompts to confirm."
-        },
-        {
-          question: "How can I view my ride history?",
-          answer: "Your ride history can be viewed in the 'History' section. It will show all rides you have posted or booked."
-        }
+            question: "How do I update my profile details?",
+            answer: "Go to the 'Profile' page, click 'Edit,' and update your information."
+          },
+          {
+            question: "Can I deactivate my account?",
+            answer:"Yes, go to the Settings page and click Deactivate Account. Follow the prompts to confirm."
+          },
+          {
+            question: "How can I view my ride history?",
+            answer: "Your ride history can be viewed in the 'History' section. It will show all rides you have posted or booked."
+          }
+        
       ],
       "Technical Issues": [
         {
-          question:" I am having trouble logging in. What should I do?",
-          answer: "Ensure you are entering the correct email and password. If the issue persists, try resetting your password."
-        },
-        {
-          question: "The app is not loading properly.",
-          answer: "Check your internet connection. If the issue continues, clear your app cache or reinstall the app."
-        },
-        {
-          question: "I am unable to book a ride.",
-          answer: " Ensure the ride still has available seats and that your payment method is valid. If you face further issues, contact our support team."
-        }
+            question:" I am having trouble logging in. What should I do?",
+            answer: "Ensure you are entering the correct email and password. If the issue persists, try resetting your password."
+          },
+          {
+            question: "The app is not loading properly.",
+            answer: "Check your internet connection. If the issue continues, clear your app cache or reinstall the app."
+          },
+          {
+            question: "I am unable to book a ride.",
+            answer: " Ensure the ride still has available seats and that your payment method is valid. If you face further issues, contact our support team."
+          }
+        
       ],
       "App Features": [
         {
-          question: "How do I rate a driver or passenger?",
-          answer: "After completing a ride, you will be prompted to rate the driver or passenger. You can also rate from the ride history."
-        },
-        {
-          question:"Can I chat with my driver or passenger?",
-          answer:"Yes, once a booking is confirmed, you can use the in-app chat feature to communicate with your driver or passenger"
-        },
-        {
-          question:"What happens if the driver cancels the ride?",
-          answer:"You wll be notified of the cancellation and receive a refund if you have already paid. You can then book another ride."
-        }
+            question: "How do I rate a driver or passenger?",
+            answer: "After completing a ride, you will be prompted to rate the driver or passenger. You can also rate from the ride history."
+          },
+          {
+            question:"Can I chat with my driver or passenger?",
+            answer:"Yes, once a booking is confirmed, you can use the in-app chat feature to communicate with your driver or passenger"
+          },
+          {
+            question:"What happens if the driver cancels the ride?",
+            answer:"You wll be notified of the cancellation and receive a refund if you have already paid. You can then book another ride."
+          }
+        
       ]
     }
   };
