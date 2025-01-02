@@ -60,3 +60,13 @@ router.put('/feedback/:id', auth, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+// Delete feedback
+router.delete('/feedback/:id', auth, async (req, res) => {
+    try {
+        await Feedback.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: 'Feedback deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+module.exports = router;
