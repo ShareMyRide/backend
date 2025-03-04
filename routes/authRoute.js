@@ -6,6 +6,7 @@ const auth=require("../Security/auth")
 const secretekey='project@shareMyRide';
 const {verifyToken}=require("../Security/auth")
 
+/*
 router.post("/register", async (req, res) => {
   try {
     //check already an account 
@@ -41,7 +42,44 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+*/
+router.post("/register", async (req, res) => {
+  try {
+    const { firstname, lastname, email, NIC, password, confirmPassword } = req.body;
 
+    if (!firstname || !lastname || !email || !NIC || !password || !confirmPassword) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    // Check if user already exists (by NIC or email)
+    const existingUser = await User.findOne({ NIC });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists with this NIC" });
+    }
+
+    // Hash password before saving
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = new User({
+      firstname,
+      lastname,
+      email,
+      NIC,
+      password: hashedPassword,
+    });
+
+    const user = await newUser.save();
+    return res.status(200).json({ message: "Registration successful", user });
+  } catch (err) {
+    console.error("Error during registration:", err);
+    return res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+});
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
