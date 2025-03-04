@@ -113,4 +113,14 @@ router.put("/editProfile/:id",async(req,res)=>{
       res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+
+//logout 
+router.post('/logout', verifyToken, (req, res) => {
+  try {
+      res.status(200).json({ message: "Logout successful" });
+  } catch (err) {
+      res.status(500).json({ message: "An error occurred while logging out", error: err.message });
+  }
+});
+
 module.exports=router;
