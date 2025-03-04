@@ -1,5 +1,5 @@
 const jwt=require("jsonwebtoken");
-const secretekey="project@shareMyride";
+const secretekey="project@shareMyRide";
 
 function verifyToken(req,res,next){
     try{
@@ -20,7 +20,7 @@ function verifyToken(req,res,next){
 
            
             req.user = { id: decoded.userId || decoded.id };
-            //req.user =decoded
+           // req.user =decoded
             console.log("User ID:", req.user.id);
 
             next();
