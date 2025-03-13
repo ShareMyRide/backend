@@ -6,44 +6,9 @@ const auth=require("../Security/auth")
 const secretekey='project@shareMyRide';
 const {verifyToken}=require("../Security/auth")
 
-/*
+//user registration
 router.post("/register", async (req, res) => {
-  try {
-    //check already an account 
-    const existingUser=await User.findOne({NIC:req.body.NIC});
-    if(existingUser){
-      return res.status(400).json({message:"An Account with this NIC already Exists."})
-    }
-    // Check password
-    if (req.body.password !== req.body.confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
-
-    
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(req.body.password, salt);
-
-    
-    const newUser = new User({
-      firstname: req.body.firstname,
-      lastname:req.body.lastname,
-      email: req.body.email,
-      password: hashedPassword,
-      mobileNumber:req.body.mobileNumber,
-      NIC:req.body.NIC
-
-     
-    });
-
-    
-    const user = await newUser.save();
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-*/
-router.post("/register", async (req, res) => {
+  console.log("Received data:", req.body); 
   try {
     const { firstname, lastname, email, NIC, password, confirmPassword } = req.body;
 
@@ -55,13 +20,13 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    // Check if user already exists (by NIC or email)
+    
     const existingUser = await User.findOne({ NIC });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists with this NIC" });
     }
 
-    // Hash password before saving
+    
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -132,14 +97,24 @@ router.put("/editProfile/:id",async(req,res)=>{
   }
  })
 
- // view user
+ 
 
- router.get("/user/:id", async (req, res) => {
+//logout 
+router.post('/logout', verifyToken, (req, res) => {
+  try {
+      res.status(200).json({ message: "Logout successful" });
+  } catch (err) {
+      res.status(500).json({ message: "An error occurred while logging out", error: err.message });
+  }
+});
+
+//view user details
+router.get("/users/:id", verifyToken, async (req, res) => {
   try {
       const userId = req.params.id;
 
-      // Find user by ID
-      const user = await User.findById(userId);
+      
+      const user = await User.findById(userId);  
 
       if (!user) {
           return res.status(404).json({ message: "User not found" });
@@ -149,15 +124,6 @@ router.put("/editProfile/:id",async(req,res)=>{
   } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Server error", error: error.message });
-  }
-});
-
-//logout 
-router.post('/logout', verifyToken, (req, res) => {
-  try {
-      res.status(200).json({ message: "Logout successful" });
-  } catch (err) {
-      res.status(500).json({ message: "An error occurred while logging out", error: err.message });
   }
 });
 
