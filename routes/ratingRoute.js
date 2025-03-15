@@ -87,4 +87,56 @@ router.get("/all", verifyToken, async (req, res) => {
       });
     }
   });
+
+
+
+  
+  router.get("/stats", async (req, res) => {
+    try {
+      const stats = await Rating.aggregate([
+        {
+          $group: {
+            _id: null,
+            averageRating: { $avg: "$rating" },
+            totalRatings: { $sum: 1 },
+            fiveStars: { $sum: { $cond: [{ $eq: ["$rating", 5] }, 1, 0] } },
+            fourStars: { $sum: { $cond: [{ $eq: ["$rating", 4] }, 1, 0] } },
+            threeStars: { $sum: { $cond: [{ $eq: ["$rating", 3] }, 1, 0] } },
+            twoStars: { $sum: { $cond: [{ $eq: ["$rating", 2] }, 1, 0] } },
+            oneStars: { $sum: { $cond: [{ $eq: ["$rating", 1] }, 1, 0] } }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            averageRating: { $round: ["$averageRating", 2] },
+            totalRatings: 1,
+            fiveStars: 1,
+            fourStars: 1,
+            threeStars: 1,
+            twoStars: 1,
+            oneStars: 1
+          }
+        }
+      ]);
+  
+      return res.status(200).json(stats[0] || {
+        averageRating: 0,
+        totalRatings: 0,
+        fiveStars: 0,
+        fourStars: 0,
+        threeStars: 0,
+        twoStars: 0,
+        oneStars: 0
+      });
+    } catch (error) {
+      console.error("Error fetching rating statistics:", error);
+      return res.status(500).json({ 
+        message: "An error occurred while fetching rating statistics", 
+        error: error.message 
+      });
+    }
+  });
+  
+
 module.exports = router;
