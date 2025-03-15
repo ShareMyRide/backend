@@ -50,4 +50,25 @@ router.post("/submit", verifyToken, async (req, res) => {
 });
 
 
+
+router.get("/user", verifyToken, async (req, res) => {
+    try {
+      const userId = req.user.id; // fixed from req.user.userId
+  
+      const rating = await Rating.findOne({ userId });
+  
+      if (!rating) {
+        return res.status(404).json({ message: "No rating found for this user" });
+      }
+  
+      return res.status(200).json(rating);
+    } catch (error) {
+      console.error("Error fetching rating:", error);
+      return res.status(500).json({ 
+        message: "An error occurred while fetching the rating", 
+        error: error.message 
+      });
+    }
+  });
+
 module.exports = router;
