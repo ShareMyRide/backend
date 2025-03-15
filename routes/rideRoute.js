@@ -26,7 +26,7 @@ router.get('/:id',async(req,res)=>{
     }
 })
 
-router.post('/',async(req,res)=>{
+router.post('/start',async(req,res)=>{
     const {date,startingPoint,endingPoint} = req.body;
 
     if(!date || !startingPoint || !endingPoint){
