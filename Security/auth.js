@@ -1,35 +1,28 @@
-const jwt=require("jsonwebtoken");
-const secretekey="project@shareMyride";
+const jwt = require("jsonwebtoken");
+const secretKey = "project@shareMyRide";
 
-function verifyToken(req,res,next){
-    try{
-        const token=req.headers.authorization;
-        if(!token){
-            console.log("token not available");
-            
-            return res.status(403).send("token not available")
+function verifyToken(req, res, next) {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader) {
+            return res.status(403).json({ error: "Token not available" });
         }
-        const actualToken = token.split(" ")[1];
-        jwt.verify(actualToken, secretekey, (err, decoded) => {
+
+        const token = authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : authHeader;
+
+        jwt.verify(token, secretKey, (err, decoded) => {
             if (err) {
-                console.log("Invalid token");
-                return res.status(401).json({ error_message: "Invalid token" });
+                return res.status(401).json({ error: "Invalid token" });
             }
-           console.log("Token:", actualToken);
-            console.log("Decoded Token:", decoded);
 
-           
             req.user = { id: decoded.userId || decoded.id };
-            //req.user =decoded
-            console.log("User ID:", req.user.id);
-
             next();
         });
-    }
-    catch(error){
-        console.log("Error:",error.message);
-        return res.status(500).json({error_message:error.message})
+
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
     }
 }
 
-module.exports={verifyToken};
+module.exports = { verifyToken };
