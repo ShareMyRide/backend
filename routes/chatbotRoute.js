@@ -1,10 +1,6 @@
 const router = require("express").Router();
-const User = require("../models/User");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const auth=require("../Security/auth")
-const secretekey='project@shareMyRide';
 const {verifyToken}=require("../Security/auth")
+const CustomMessage = require("../models/chatbotData");
 
 const chatbotData = {
     categories: [
@@ -147,23 +143,29 @@ const chatbotData = {
     
 
     if (customMessage) {
-        try {
-          const newMessage = new CustomMessage({
-            message: customMessage,
-            category
-          });
-          await newMessage.save();
-    
-          return res.json({
-            message: "Thank you for your message! We will review it and improve our chatbot."
-          });
-        } catch (err) {
-          console.error("Error saving custom message:", err);
-          return res.status(500).json({
-            error: "An error occurred while saving your message. Please try again later."
-          });
-        }
+      try {
+        // Create a new custom message document
+        const newMessage = new CustomMessage({
+          message: customMessage,
+          category: category || "Custom Message" // Use provided category or default to "Custom Message"
+        });
+        
+        // Save to database
+        await newMessage.save();
+        
+        // Respond to the user
+        return res.json({
+          success: true,
+          message: "Thank you for your message! We will review it and improve our chatbot."
+        });
+      } catch (err) {
+        console.error("Error saving custom message:", err);
+        return res.status(500).json({
+          success: false,
+          error: "An error occurred while saving your message. Please try again later."
+        });
       }
+    }
     
       const questionsList = chatbotData.questions[category].map(q => q.question);
       return res.json({ questions: questionsList });
