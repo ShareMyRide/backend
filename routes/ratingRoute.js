@@ -71,4 +71,20 @@ router.get("/user", verifyToken, async (req, res) => {
     }
   });
 
+router.get("/all", verifyToken, async (req, res) => {
+    try {
+      const ratings = await Rating.find().populate('userId', 'firstname lastname email');
+  
+      return res.status(200).json({
+        count: ratings.length,
+        ratings
+      });
+    } catch (error) {
+      console.error("Error fetching ratings:", error);
+      return res.status(500).json({ 
+        message: "An error occurred while fetching ratings", 
+        error: error.message 
+      });
+    }
+  });
 module.exports = router;
