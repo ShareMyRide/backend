@@ -1,3 +1,11 @@
+const router = require("express").Router();
+const User = require("../models/User");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const auth=require("../Security/auth")
+const secretekey='project@shareMyRide';
+const {verifyToken}=require("../Security/auth")
+
 const chatbotData = {
     categories: [
       "General",
@@ -109,7 +117,7 @@ const chatbotData = {
     }
   };
 
-  app.post("/chatbot",async (req, res) => {
+  router.post("/chatbot",async (req, res) => {
 
     const { category, question, customMessage } = req.body;
 
@@ -160,3 +168,5 @@ const chatbotData = {
       const questionsList = chatbotData.questions[category].map(q => q.question);
       return res.json({ questions: questionsList });
     });
+
+    module.exports=router;
