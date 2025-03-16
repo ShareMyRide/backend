@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.use('/api/auth',authRoute)
 app.use('/api/ride',rideRoute)
-app.use('/api/ride',ratingRoute)
+app.use('/api/rating',ratingRoute)
 
 app.listen(2052,()=>{
     console.log("Backend server is running")
