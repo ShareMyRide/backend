@@ -20,11 +20,7 @@ const userSchema=new mongoose.Schema({
         max:100,
         unique:true 
     },
-    mobileNumber:{
-        type:Number,
-        required:true,
-        unique:true
-    },
+  
     password:{
         type:String,
         required:true,
