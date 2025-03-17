@@ -1,8 +1,12 @@
+require('dotenv').config(); 
+
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-//const API_KEY = AIzaSyAiQ_WJER_3HDCs0B6tH01WPTCzB1COSLA;  // Google Maps API Key
+
+const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+
 
 // POST route to fetch route directions
 router.post('/route', async (req, res) => {
