@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
-const rideSchema = new mongoose.Schema({
+const RideSchema = new mongoose.Schema({
+    userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   date: {
     type: String,
     required: true
@@ -13,35 +18,45 @@ const rideSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  startCoordinates: {
+    type: Object,
+    properties: {
+      latitude: Number,
+      longitude: Number
+    }
+  },
+  endCoordinates: {
+    type: Object,
+    properties: {
+      latitude: Number,
+      longitude: Number
+    }
+  },
+  distance: {
+    type: String
+  },
+  routePath: {
+    type: Array
+  },
   vehicleType: {
-    type: String,
-    required: false
+    type: String
   },
   vehicleNumber: {
-    type: String,
-    required: false
+    type: String
   },
   availableSeats: {
-    type: String,
-    required: false
+    type: Number
   },
   contactNumber: {
-    type: String,
-    required: false
+    type: String
   },
   beginningTime: {
-    type: String,
-    required: false
+    type: String
   },
   createdAt: {
     type: Date,
     default: Date.now
-  },
-  updatedAt: {
-    type: Date
   }
 });
 
-const Ride = mongoose.model('Ride', rideSchema);
-
-module.exports = Ride;
+module.exports = mongoose.model('Ride', RideSchema);

@@ -16,12 +16,12 @@ var db = mongoose.connection;
 db.on('error', () => console.log("Error in connecting to DB"));
 db.once('open', () => console.log("Connected to DB"));
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth',authRoute)
 app.use('/api/ride',rideRoute)
 app.use('/api/chatbot',chatbotRoute)
-app.use('/api/ride',ratingRoute)
+app.use('/api/rating',ratingRoute)
 
 
 app.listen(2052,()=>{

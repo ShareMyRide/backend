@@ -1,128 +1,155 @@
 const express = require('express');
 const router = express.Router();
 const Ride = require('../models/Ride');
+const { verifyToken } = require('../Security/auth');
 
-// Get all rides
-router.get('/', async (req, res) => {
-  try {
+// Apply verifyToken middleware to all routes
+router.use(verifyToken);
+
+router.get('/', async(req, res) => {
     const result = await Ride.find();
-    if (result) {
-      res.status(200).json(result);
+    if(result) {
+        res.status(200).json(result);
     } else {
-      res.status(404).send("No rides found");
+        res.status(404).send("Ride not found");
     }
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 });
 
-// Get ride by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const result = await Ride.findById(id);
-    
-    if (result) {
-      res.status(200).json(result);
-    } else {
-      res.status(404).send("Ride not found");
+router.get('/user/rides', async(req, res) => {
+    try {
+        // req.user.id comes from the verifyToken middleware
+        const userId = req.user.id;
+        
+        const rides = await Ride.find({ userId: userId });
+        
+        res.status(200).json(rides);
+    } catch(error) {
+        console.error("Error fetching user rides:", error);
+        res.status(500).json({ message: "Failed to fetch user rides", error: error.message });
     }
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 });
 
-// Create a new ride
-router.post('/start', async (req, res) => {
-  try {
+router.post('/start', async(req, res) => {
     const {
-      date,
-      startingPoint,
-      endingPoint,
-      vehicleType,
-      vehicleNumber,
-      availableSeats,
-      contactNumber,
-      beginningTime
+        date,
+        startingPoint,
+        endingPoint,
+        startCoordinates,
+        endCoordinates,
+        distance,
+        routePath,
+        vehicleType,
+        vehicleNumber,
+        availableSeats,
+        contactNumber,
+        beginningTime
     } = req.body;
     
-    // Validate required fields
-    if (!date || !startingPoint || !endingPoint) {
-      return res.status(400).json({ error: "Please provide required fields: date, startingPoint, endingPoint" });
+    if(!date || !startingPoint || !endingPoint) {
+        return res.status(400).send("Please provide required fields");
     }
     
-    // Create new ride with all data
-    const newRide = {
-      date,
-      startingPoint,
-      endingPoint,
-      vehicleType,
-      vehicleNumber,
-      availableSeats,
-      contactNumber,
-      beginningTime,
-      createdAt: new Date()
-    };
-    
-    const result = await Ride.create(newRide);
-    res.status(201).json(result);
-  } catch (error) {
-    console.error("Error creating ride:", error);
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        // Create the ride with userId from the token
+        const result = await Ride.create({
+            userId: req.user.id, // This comes from the verifyToken middleware
+            date,
+            startingPoint,
+            endingPoint,
+            startCoordinates,
+            endCoordinates,
+            distance,
+            routePath,
+            vehicleType,
+            vehicleNumber,
+            availableSeats,
+            contactNumber,
+            beginningTime
+        });
+        
+        res.status(201).json(result);
+    } catch(error) {
+        console.error("Error creating ride:", error);
+        res.status(500).json({ message: "Failed to create ride", error: error.message });
+    }
 });
 
-// Delete ride by ID
-router.delete('/:id', async (req, res) => {
-  try {
+router.delete('/:id', async(req, res) => {
     const id = req.params.id;
     const ride = await Ride.findById(id);
     
-    if (!ride) {
-      return res.status(404).json({ error: "Ride not found" });
+    if(!ride) {
+        return res.status(404).send("Ride not found");
     }
     
-    const result = await Ride.deleteOne({ _id: id });
-    res.status(200).json({ message: "Ride deleted successfully", result });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    // Check if the user is the owner of the ride
+    if(ride.userId.toString() !== req.user.id) {
+        return res.status(403).json({ message: "Not authorized to delete this ride" });
+    }
+    
+    try {
+        const result = await Ride.deleteOne({ _id: id });
+        res.status(200).json(result);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// Update ride by ID
-router.put('/:id', async (req, res) => {
-  try {
+router.put('/:id', async(req, res) => {
     const id = req.params.id;
-    
-    // Check if ride exists
     const ride = await Ride.findById(id);
-    if (!ride) {
-      return res.status(404).json({ error: "Ride not found" });
+    
+    if(!ride) {
+        return res.status(404).send("Ride not found");
     }
     
-    // Update with new data
-    const updateData = {
-      date: req.body.date,
-      startingPoint: req.body.startingPoint,
-      endingPoint: req.body.endingPoint,
-      vehicleType: req.body.vehicleType,
-      vehicleNumber: req.body.vehicleNumber,
-      availableSeats: req.body.availableSeats,
-      contactNumber: req.body.contactNumber,
-      beginningTime: req.body.beginningTime,
-      updatedAt: new Date()
-    };
+    // Check if the user is the owner of the ride
+    if(ride.userId.toString() !== req.user.id) {
+        return res.status(403).json({ message: "Not authorized to update this ride" });
+    }
     
-    // Only update fields that are provided
-    Object.keys(updateData).forEach(key => 
-      updateData[key] === undefined && delete updateData[key]
-    );
+    const {
+        date,
+        startingPoint,
+        endingPoint,
+        startCoordinates,
+        endCoordinates,
+        distance,
+        routePath,
+        vehicleType,
+        vehicleNumber,
+        availableSeats,
+        contactNumber,
+        beginningTime
+    } = req.body;
     
-    const result = await Ride.findByIdAndUpdate(id, updateData, { new: true });
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    if(!date || !startingPoint || !endingPoint) {
+        return res.status(400).send("Please provide required fields");
+    }
+    
+    try {
+        const result = await Ride.updateOne(
+            { _id: id },
+            {
+                date,
+                startingPoint,
+                endingPoint,
+                startCoordinates,
+                endCoordinates,
+                distance,
+                routePath,
+                vehicleType,
+                vehicleNumber,
+                availableSeats,
+                contactNumber,
+                beginningTime
+            }
+        );
+        
+        res.status(200).json(result);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 module.exports = router;
