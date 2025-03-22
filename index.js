@@ -8,16 +8,21 @@ app.use(cors());
 
 const authRoute=require('./routes/authRoute')
 const rideRoute=require('./routes/rideRoute')
+const chatbotRoute=require('./routes/chatbotRoute')
+const ratingRoute=require('./routes/ratingRoute')
 
 mongoose.connect("mongodb+srv://adithyagunasekara2000:YvovidOF8PJwJoTI@cluster0.ksfu6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
 var db = mongoose.connection;
 db.on('error', () => console.log("Error in connecting to DB"));
 db.once('open', () => console.log("Connected to DB"));
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth',authRoute)
 app.use('/api/ride',rideRoute)
+app.use('/api/chatbot',chatbotRoute)
+app.use('/api/rating',ratingRoute)
+
 
 app.listen(2052,()=>{
     console.log("Backend server is running")

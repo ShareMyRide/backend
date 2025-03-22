@@ -1,3 +1,4 @@
+const mongoose=require("mongoose");
 const customMessageSchema = new mongoose.Schema({
 
     message: {
@@ -15,3 +16,4 @@ const customMessageSchema = new mongoose.Schema({
   });
   
   const CustomMessage = mongoose.model("CustomMessage", customMessageSchema);
+  module.exports = CustomMessage;
