@@ -260,13 +260,19 @@ router.put("/editProfile/:id", verifyToken, async (req, res) => {
 
 router.post('/logout', verifyToken, (req, res) => {
   try {
+    // Make sure authorization header exists
+    if (!req.headers.authorization) {
+      return res.status(400).json({ message: "No token provided" });
+    }
+    
     const token = req.headers.authorization.split(' ')[1];
     
-    
+    // Add the token to blacklist
     tokenBlacklist.add(token);
     
     res.status(200).json({ message: "Logout successful" });
   } catch (err) {
+    console.error("Logout error:", err);
     res.status(500).json({ message: "An error occurred while logging out", error: err.message });
   }
 });
