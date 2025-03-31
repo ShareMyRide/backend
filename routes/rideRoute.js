@@ -6,7 +6,7 @@ const { verifyToken } = require('../Security/auth');
 // Apply verifyToken middleware to all routes
 router.use(verifyToken);
 
-router.get('/', async(req, res) => {
+router.get('/all', async(req, res) => {
     const result = await Ride.find();
     if(result) {
         res.status(200).json(result);
@@ -151,5 +151,25 @@ router.put('/:id', async(req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+//to get vehicle details 
+router.get('/latestByUser/:userId', verifyToken, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      
+      const latestRide = await Ride.findOne({ userId })
+        .sort({ createdAt: -1 }) // Get the most recent ride
+        .limit(1);
+      
+      if (!latestRide) {
+        return res.status(404).json({ message: 'No rides found for this user' });
+      }
+      
+      res.json(latestRide);
+    } catch (error) {
+      console.error('Error fetching latest ride:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
 
 module.exports = router;

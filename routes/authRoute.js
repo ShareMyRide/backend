@@ -211,36 +211,47 @@ router.post("/reset-password", async (req, res) => {
 
 
 //edit profile details
-router.put("/editProfile/:id",async(req,res)=>{
-  try{
-   const userId=req.params.id;
-   const{firstname,lastname,email,mobileNumber,password,NIC}=req.body;
-  
-   const updateUser=await User.findByIdAndUpdate(
-     userId,
-     {
-       firstname,
-       lastname,
-       email,
-       mobileNumber,
-       password,
-       NIC,
-      }, 
+router.put("/editProfile/:id", verifyToken, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { firstname, lastname, email, mobileNumber, address, vehicle, NIC } = req.body;
+    
+    // Find user first to preserve password
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    const updateData = {
+      firstname,
+      lastname,
+      email,
+      mobileNumber,
+      address,
+      vehicle,
+      NIC
+    };
+    
+    // Only update fields that were provided
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === undefined) delete updateData[key];
+    });
+    
+    const updateUser = await User.findByIdAndUpdate(
+      userId,
+      updateData,
       {
-       new:true,runValidators:true
+        new: true, 
+        runValidators: true
       }
-   );
-   if(!updateUser){
-     return res.status(404).json({message:"User not found"});
-   }
-   res.status(200).json({message:"Profile updated successfully",updateUser});
- 
+    );
+    
+    res.status(200).json({ message: "Profile updated successfully", user: updateUser });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "An error occurred while updating the profile" });
   }
-  catch(error){
-   console.log(error);
-   res.status(500).json({message:"An error occured while updating the profile"});
-  }
- })
+});
 
  
 
