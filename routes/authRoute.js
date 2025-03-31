@@ -2,6 +2,10 @@ const router = require("express").Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+
 const auth=require("../Security/auth")
 const secretekey='project@shareMyRide';
 const {verifyToken}=require("../Security/auth")
@@ -64,6 +68,147 @@ router.post('/login', async (req, res) => {
       res.status(500).json({ error: err.message });
   }
 });
+
+
+
+const otpStore = {};
+
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // or another service
+  auth: {
+    user: process.env.EMAIL_USER || 'gunasekaraadith@gmail.com',
+    pass: process.env.EMAIL_PASS || 'tvucvpkmifuehmij'
+  }
+});
+
+// Request password reset - send OTP to email
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+    
+   
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    
+    const otp = crypto.randomInt(100000, 999999).toString();
+    
+    
+    otpStore[email] = {
+      otp,
+      expiry: Date.now() + 2 * 60 * 1000 // 10 minutes in milliseconds
+    };
+    
+   
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'gunasekaraadith@gmail.com',
+      to: email,
+      subject: 'Password Reset OTP',
+      text: `Your OTP for password reset is: ${otp}. This OTP will expire in 10 minutes.`
+    };
+    
+    await transporter.sendMail(mailOptions);
+    
+    return res.status(200).json({ message: "OTP sent to your email" });
+  } catch (error) {
+    console.error("Error in forgot password:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// Verify OTP
+router.post("/verify-otp", async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+    
+    
+    const otpData = otpStore[email];
+    if (!otpData) {
+      return res.status(400).json({ message: "No OTP request found" });
+    }
+    
+   
+    if (Date.now() > otpData.expiry) {
+      delete otpStore[email]; 
+      return res.status(400).json({ message: "OTP has expired" });
+    }
+    
+    
+    if (otp !== otpData.otp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+    
+    
+    const resetToken = jwt.sign({ email }, secretekey, { expiresIn: '2m' });
+    
+    
+    delete otpStore[email];
+    
+    return res.status(200).json({ 
+      message: "OTP verified successfully", 
+      resetToken 
+    });
+  } catch (error) {
+    console.error("Error in OTP verification:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// Reset password with valid token
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { resetToken, newPassword, confirmPassword } = req.body;
+    
+    if (!resetToken || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+    
+    
+    let decoded;
+    try {
+      decoded = jwt.verify(resetToken, secretekey);
+    } catch (err) {
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
+    
+    
+    const user = await User.findOne({ email: decoded.email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+  
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    
+   
+    user.password = hashedPassword;
+    await user.save();
+    
+    return res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Error in password reset:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+
+
 
 //edit profile details
 router.put("/editProfile/:id",async(req,res)=>{
