@@ -36,5 +36,13 @@ const userSchema=new mongoose.Schema({
         min:10,
         max:12
     },
-});
+    mobileNumber: {
+        type: String,
+      },
+      address: {
+        type: String,
+      },
+     
+      // Add any other fields you need
+    }, { timestamps: true });
 module.exports=mongoose.model("User",userSchema);
