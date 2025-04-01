@@ -7,7 +7,6 @@ const Request = require("../models/Request");
 const { Mongoose } = require("mongoose");
 
 // Apply verifyToken middleware to all routes
-router.use(verifyToken);
 
 router.get("/all", async (req, res) => {
   const result = await Ride.find();
@@ -90,7 +89,7 @@ router.delete("/:id", async (req, res) => {
   }
 
   // Check if the user is the owner of the ride
-  if (ride.userId.toString() !== req.user.id) {
+  if (ride?.userId.toString() !== req.user?.id) {
     return res
       .status(403)
       .json({ message: "Not authorized to delete this ride" });
@@ -239,7 +238,10 @@ router.post("/getRequests", async (req, res) => {
 
     try {
       // Create the ride with userId from the token
-      const result = await Request.find();
+      const result = await Request.find({
+        rideId: new ObjectId(rideId),
+      }).populate("requestById"); // No need for .exec() with callback
+
       console.log(result);
 
       res.status(200).json(result);

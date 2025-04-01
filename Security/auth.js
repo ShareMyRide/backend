@@ -5,6 +5,7 @@ const secretKey = "project@shareMyRide";
 const tokenBlacklist = new Set();
 
 function verifyToken(req, res, next) {
+  console.log(456);
   try {
     const authHeader = req.headers.authorization;
 
