@@ -2,14 +2,13 @@ const express=require("express");
 const app=new express();
 const mongoose=require("mongoose");
 const cors = require("cors");
-
 app.use(cors());
-
-
 const authRoute=require('./routes/authRoute')
 const rideRoute=require('./routes/rideRoute')
 const chatbotRoute=require('./routes/chatbotRoute')
 const ratingRoute=require('./routes/ratingRoute')
+
+
 
 mongoose.connect("mongodb+srv://adithyagunasekara2000:YvovidOF8PJwJoTI@cluster0.ksfu6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
 var db = mongoose.connection;
@@ -24,6 +23,7 @@ app.use('/api/chatbot',chatbotRoute)
 app.use('/api/rating',ratingRoute)
 
 
-app.listen(2052,()=>{
+
+app.listen(2053,()=>{
     console.log("Backend server is running")
 });
