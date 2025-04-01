@@ -2,38 +2,86 @@ const router = require("express").Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const { check, validationResult } = require('express-validator'); // Add express-validator
 
-const auth=require("../Security/auth")
-const secretekey='project@shareMyRide';
-const {verifyToken,tokenBlacklist}=require("../Security/auth")
+const auth = require("../Security/auth");
+const secretekey = 'project@shareMyRide';
+const { verifyToken, tokenBlacklist } = require("../Security/auth");
 
-//user registration
-router.post("/register", async (req, res) => {
-  console.log("Received data:", req.body); 
+// Enhanced user registration with validation
+router.post("/register", [
+  check('firstname')
+    .trim()
+    .notEmpty().withMessage('First name is required')
+    .isLength({ min: 2, max: 50 }).withMessage('First name must be between 2 and 50 characters'),
+  
+  check('lastname')
+    .trim()
+    .notEmpty().withMessage('Last name is required')
+    .isLength({ min: 2, max: 50 }).withMessage('Last name must be between 2 and 50 characters'),
+  
+  check('email')
+    .trim()
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Invalid email format')
+    .normalizeEmail()
+    .custom(async (email) => {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        throw new Error('Email is already in use');
+      }
+      return true;
+    }),
+  
+  check('NIC')
+    .trim()
+    .notEmpty().withMessage('NIC is required')
+    .matches(/^[0-9]{9}[vVxX]$|^[0-9]{12}$/).withMessage('Invalid NIC format'),
+  
+  check('password')
+    .trim()
+    .notEmpty().withMessage('Password is required')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
+    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
+  
+  check('confirmPassword')
+    .trim()
+    .notEmpty().withMessage('Confirm password is required')
+    .custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error('Passwords do not match');
+      }
+      return true;
+    })
+], async (req, res) => {
+  console.log("Received data:", req.body);
+  
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ 
+      message: "Validation failed", 
+      errors: errors.array().map(err => ({ field: err.param, message: err.msg }))
+    });
+  }
+  
   try {
-    const { firstname, lastname, email, NIC, password, confirmPassword } = req.body;
-
-    if (!firstname || !lastname || !email || !NIC || !password || !confirmPassword) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
-
+    const { firstname, lastname, email, NIC, password } = req.body;
     
+    // Additional validation for existing NIC
     const existingUser = await User.findOne({ NIC });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists with this NIC" });
     }
-
     
+    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
+    
+    // Create new user
     const newUser = new User({
       firstname,
       lastname,
@@ -41,7 +89,7 @@ router.post("/register", async (req, res) => {
       NIC,
       password: hashedPassword,
     });
-
+    
     const user = await newUser.save();
     return res.status(200).json({ message: "Registration successful", user });
   } catch (err) {
@@ -50,6 +98,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// The rest of your existing code remains unchanged
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -68,8 +117,6 @@ router.post('/login', async (req, res) => {
       res.status(500).json({ error: err.message });
   }
 });
-
-
 
 const otpStore = {};
 
@@ -317,3 +364,4 @@ router.delete("/users/:id", verifyToken, async (req, res) => {
 });
 
 module.exports=router;
+
