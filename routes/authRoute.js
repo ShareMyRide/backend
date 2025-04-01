@@ -8,7 +8,7 @@ const crypto = require("crypto");
 
 const auth=require("../Security/auth")
 const secretekey='project@shareMyRide';
-const {verifyToken}=require("../Security/auth")
+const {verifyToken,tokenBlacklist}=require("../Security/auth")
 
 //user registration
 router.post("/register", async (req, res) => {
@@ -256,11 +256,24 @@ router.put("/editProfile/:id", verifyToken, async (req, res) => {
  
 
 //logout 
+//const tokenBlacklist = new Set(); // In a production app, this would be in Redis or a database
+
 router.post('/logout', verifyToken, (req, res) => {
   try {
-      res.status(200).json({ message: "Logout successful" });
+    // Make sure authorization header exists
+    if (!req.headers.authorization) {
+      return res.status(400).json({ message: "No token provided" });
+    }
+    
+    const token = req.headers.authorization.split(' ')[1];
+    
+    // Add the token to blacklist
+    tokenBlacklist.add(token);
+    
+    res.status(200).json({ message: "Logout successful" });
   } catch (err) {
-      res.status(500).json({ message: "An error occurred while logging out", error: err.message });
+    console.error("Logout error:", err);
+    res.status(500).json({ message: "An error occurred while logging out", error: err.message });
   }
 });
 
@@ -280,6 +293,26 @@ router.get("/users/:id", verifyToken, async (req, res) => {
   } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+router.delete("/users/:id", verifyToken, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    
+    // Find the user to confirm they exist
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+    
+    res.status(200).json({ message: "User account deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user account:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 
