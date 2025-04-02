@@ -5,7 +5,6 @@ const secretKey = "project@shareMyRide";
 const tokenBlacklist = new Set();
 
 function verifyToken(req, res, next) {
-  console.log(456);
   try {
     const authHeader = req.headers.authorization;
 
@@ -16,6 +15,7 @@ function verifyToken(req, res, next) {
     const token = authHeader.startsWith("Bearer ")
       ? authHeader.split(" ")[1]
       : authHeader;
+    console.log(24, token);
 
     if (tokenBlacklist.has(token)) {
       return res.status(401).json({ message: "Token has been invalidated" });

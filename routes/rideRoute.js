@@ -33,7 +33,7 @@ router.get("/user/rides", verifyToken, async (req, res) => {
   }
 });
 
-router.post("/start", async (req, res) => {
+router.post("/start", verifyToken, async (req, res) => {
   const {
     date,
     startingPoint,
@@ -103,7 +103,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
   const ride = await Ride.findById(id);
 
