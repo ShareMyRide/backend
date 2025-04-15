@@ -155,8 +155,8 @@ const otpStore = {};
 const transporter = nodemailer.createTransport({
   service: "gmail", // or another service
   auth: {
-    user: process.env.EMAIL_USER || "gunasekaraadith@gmail.com",
-    pass: process.env.EMAIL_PASS || "tvucvpkmifuehmij",
+    user: process.env.EMAIL_USER || "",
+    pass: process.env.EMAIL_PASS || "",
   },
 });
 
@@ -182,7 +182,7 @@ router.post("/forgot-password", async (req, res) => {
     };
 
     const mailOptions = {
-      from: process.env.EMAIL_USER || "gunasekaraadith@gmail.com",
+      from: process.env.EMAIL_USER || "",
       to: email,
       subject: "Password Reset OTP",
       text: `Your OTP for password reset is: ${otp}. This OTP will expire in 10 minutes.`,
